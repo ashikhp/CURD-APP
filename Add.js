@@ -102,9 +102,22 @@ function Add(props) {
 
                     AsyncStorage.setItem("person", JSON.stringify(updatedNotes));
 
-                } else {
-
+                } else if(index === 1) {
+                    
                     parsed1.splice(index, 1);
+                    AsyncStorage.setItem("person", JSON.stringify([
+                        
+                        parsed1[0],
+                        {
+                            "firstName": parsed[index].firstName = first,
+                            "lastName": parsed[index].lastName = last,
+                            "age": parsed[index].age = age
+                        },
+                        parsed1[1]
+
+                    ]));
+                } else{
+                        parsed1.splice(index, 1);
 
                     AsyncStorage.setItem("person", JSON.stringify([
                         ...parsed1,

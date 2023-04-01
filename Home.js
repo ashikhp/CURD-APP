@@ -11,6 +11,8 @@ export default function Home(props) {
 
     const [data, setdata] = useState([])
     const [nodata, setnodata] = useState()
+    const [test, settest] = useState()
+    const [condition, setcondition] = useState(true)
 
     const addfunction = async () => {
 
@@ -42,14 +44,40 @@ export default function Home(props) {
         }, [data]),
 
     );
+    useFocusEffect(
+        React.useCallback(() => {
+            if (data.length === 3) {
+                setcondition(false)
+            }
+            if(data.length !== 3){
+                setcondition(true)
+            }
+            if(data.length===0){
+                setnodata(true)
+            }
+        }, [data]),
 
-    const deleteItem = async (index) =>{
+    );
+    const deleteItem = async (index) => {
         const PersonData = await AsyncStorage.getItem("person");
         const parsed = await JSON.parse(PersonData);
         const parsed1 = await JSON.parse(PersonData);
         parsed1.splice(index, 1)
-        AsyncStorage.setItem("person", JSON.stringify(parsed1 ));
+        AsyncStorage.setItem("person", JSON.stringify(parsed1));
         
+        AsyncStorage.getItem('person', (err, result) => {
+            const data = JSON.parse(result);
+            if (data === null) {
+                setnodata(true)
+            }
+            else if (data !== null) {
+                setnodata(false)
+
+                setdata(data)
+            }
+        })
+        // Alert.alert("kk",JSON.stringify(parsed1.length))
+
     }
     if (nodata === true) {
         return (
@@ -95,55 +123,58 @@ export default function Home(props) {
                 {
                     data.map((item, index) => {
                         return (
-                            
+
                             <View>
-                                {(item.firstName || item.lastName || item.age) &&
+                                {item.firstName &&
 
-                                <Card style={{ width: 250, padding: 10, marginTop: 10, marginLeft: 10 }}>
-                                    <View style={{ flexDirection: "row" }}>
-                                        <Text style={{ fontSize: 20 }}>First Name : </Text>
-                                        <Text style={{ fontSize: 20 }}>{item.firstName}</Text>
-                                    </View>
-                                    <View style={{ flexDirection: "row" }}>
-                                        <Text style={{ fontSize: 20 }}>Last Name : </Text>
-                                        <Text style={{ fontSize: 20 }}>{item.lastName}</Text>
-                                    </View>
-                                    <View style={{ flexDirection: "row" }}>
-                                        <Text style={{ fontSize: 20 }}>Age : </Text>
-                                        <Text style={{ fontSize: 20 }}>{item.age}</Text>
-                                    </View>
+                                    <Card style={{ width: 250, padding: 10, marginTop: 10, marginLeft: 10 }}>
+                                        <View style={{ flexDirection: "row" }}>
+                                            <Text style={{ fontSize: 20 }}>First Name : </Text>
+                                            <Text style={{ fontSize: 20 }}>{item.firstName}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: "row" }}>
+                                            <Text style={{ fontSize: 20 }}>Last Name : </Text>
+                                            <Text style={{ fontSize: 20 }}>{item.lastName}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: "row" }}>
+                                            <Text style={{ fontSize: 20 }}>Age : </Text>
+                                            <Text style={{ fontSize: 20 }}>{item.age}</Text>
+                                        </View>
 
-                                    <View style={{ padding: 10 }}>
-                                        <Divider />
-                                        <Divider />
-                                        <Divider />
-                                    </View>
+                                        <View style={{ padding: 10 }}>
+                                            <Divider />
+                                            <Divider />
+                                            <Divider />
+                                        </View>
 
-                                    <View style={{ backgroundColor: "#fff", height: 35, flexDirection: "row" }}>
+                                        <View style={{ backgroundColor: "#fff", height: 35, flexDirection: "row" }}>
 
-                                        <TouchableOpacity
-                                            onPress={() => { props.navigation.navigate('Add Page', { editData: item, index }) }}
-                                            style={{ backgroundColor: "#bababa", height: 30, width: "50%", borderWidth: 1, justifyContent: "center", alignItems: "center" }}>
+                                            <TouchableOpacity
+                                                onPress={() => { props.navigation.navigate('Add Page', { editData: item, index }) }}
+                                                style={{ backgroundColor: "#bababa", height: 30, width: "50%", borderWidth: 1, justifyContent: "center", alignItems: "center" }}>
 
-                                            <Text>EDIT</Text>
+                                                <Text>EDIT</Text>
 
-                                        </TouchableOpacity>
+                                            </TouchableOpacity>
 
-                                        <TouchableOpacity style={{ backgroundColor: "#bababa", height: 30, width: "50%", borderWidth: 1, justifyContent: "center", alignItems: "center" }}
-                                            onPress={() => { deleteItem(index) }}
-                                        >
-                                            <Text>DELETE</Text>
-                                        </TouchableOpacity>
+                                            <TouchableOpacity style={{ backgroundColor: "#bababa", height: 30, width: "50%", borderWidth: 1, justifyContent: "center", alignItems: "center" }}
+                                                onPress={() => {
+                                                    deleteItem(index)
+                                                }}
+                                            >
+                                                <Text>DELETE</Text>
+                                            </TouchableOpacity>
 
-                                    </View>
+                                        </View>
 
 
-                                </Card>
-                    }
+                                    </Card>
+                                }
                             </View>
                         )
                     })
                 }
+                {condition === true &&
                 <TouchableOpacity
                     style={{
                         position: "absolute",
@@ -171,6 +202,7 @@ export default function Home(props) {
                 >
                     <MaterialCommunityIcons name="plus" size={20} color="#eb2459" />
                 </TouchableOpacity>
+    }
             </View>
         )
     }
